@@ -3,6 +3,7 @@ import { Link, useHistory } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 import { Map, TileLayer, Marker, Popup } from "react-leaflet";
 import { LeafletMouseEvent } from "leaflet";
+import Dropzone from '../../components/Dropzone';
 import axios from "axios";
 import api from "../../services/api";
 
@@ -24,6 +25,7 @@ interface cityIBGE {
 }
 
 const CreatePoint = () => {
+  const [file, setFile] = useState<File>();
   const [items, setItems] = useState<Item[]>([]);
   const [UFs, setUFs] = useState<string[]>([]);
   const [cities, setCities] = useState<string[]>([]);
@@ -115,8 +117,24 @@ const CreatePoint = () => {
     const city = selectedCity;
     const [ latitude, longitude ] = selectedMapPosition;
 
-    const data = {
-      name, email, whatsapp, items, uf, city, latitude, longitude
+    const dataJSON = {
+      name, email, whatsapp, uf, city, latitude: String(latitude), longitude: String(longitude), items: items.join(',')
+    }
+
+    function hasKey<O>(obj: O, key: keyof any): key is keyof O {
+      return key in obj
+    }
+
+    const data = new FormData();
+
+    for(const key in dataJSON) {
+      if (hasKey(dataJSON, key)) {
+        data.append(key, dataJSON[key]);
+      }
+    }
+
+    if (file) {
+      data.append('image', file);
     }
 
     await api.post('points', data);
@@ -141,6 +159,7 @@ const CreatePoint = () => {
         <h1>
           Cadastro do <br /> ponto de coleta
         </h1>
+        <Dropzone onFileUploaded={setFile} />
         <fieldset>
           <legend>
             <h2>Dados</h2>
