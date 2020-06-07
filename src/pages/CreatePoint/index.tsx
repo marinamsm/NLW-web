@@ -3,6 +3,7 @@ import { Link, useHistory } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 import { Map, TileLayer, Marker, Popup } from "react-leaflet";
 import { LeafletMouseEvent } from "leaflet";
+import * as yup from 'yup';
 import Dropzone from '../../components/Dropzone';
 import axios from "axios";
 import api from "../../services/api";
@@ -121,6 +122,21 @@ const CreatePoint = () => {
       name, email, whatsapp, uf, city, latitude: String(latitude), longitude: String(longitude), items: items.join(',')
     }
 
+    const schema = yup.object().shape({
+      name: yup.string().required(),
+      email: yup.string().required().email(),
+      uf: yup.string().required(),
+      city: yup.string().required(),
+      whatsapp: yup.number().required()
+    });
+
+    schema.validate(dataJSON, { abortEarly: false }).catch(function(error: yup.ValidationError) {
+      // error.name; // => 'ValidationError'
+      // error.errors; // => ['age must be a number']
+      alert(`Campos inválidos!: ${error.errors}`);
+      return;
+    });
+
     function hasKey<O>(obj: O, key: keyof any): key is keyof O {
       return key in obj
     }
@@ -187,7 +203,7 @@ const CreatePoint = () => {
             <div className="field">
               <label htmlFor="whatsapp">Whatsapp</label>
               <input
-                type="text"
+                type="number"
                 name="whatsapp"
                 id="whatsapp"
                 onChange={handleInputChange}
