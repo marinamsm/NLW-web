@@ -127,7 +127,7 @@ const CreatePoint = () => {
       email: yup.string().required().email(),
       uf: yup.string().required(),
       city: yup.string().required(),
-      whatsapp: yup.number().required()
+      whatsapp: yup.string().required()
     });
 
     schema.validate(dataJSON, { abortEarly: false }).catch(function(error: yup.ValidationError) {
@@ -203,7 +203,7 @@ const CreatePoint = () => {
             <div className="field">
               <label htmlFor="whatsapp">Whatsapp</label>
               <input
-                type="number"
+                type="text"
                 name="whatsapp"
                 id="whatsapp"
                 onChange={handleInputChange}
